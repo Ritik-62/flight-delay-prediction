@@ -1,0 +1,62 @@
+[
+  {
+    "Model": "Logistic Regression (Def. 0.50)",
+    "ROC AUC": 0.5964,
+    "PR AUC": 0.2411,
+    "Precision": 0.2479,
+    "Recall": 0.3546,
+    "F1 Score": 0.2918,
+    "Brier Score": 0.20198,
+    "Balanced Acc": 0.5557,
+    "Threshold": 0.5,
+    "Latency (ms/1k)": 0.06
+  },
+  {
+    "Model": "Logistic Regression (Op. 0.28)",
+    "ROC AUC": 0.5964,
+    "PR AUC": 0.2411,
+    "Precision": 0.1999,
+    "Recall": 0.8756,
+    "F1 Score": 0.3255,
+    "Brier Score": 0.20198,
+    "Balanced Acc": 0.5417,
+    "Threshold": 0.2774941921234131,
+    "Latency (ms/1k)": 0.06
+  },
+  {
+    "Model": "XGBoost (Def. 0.50)",
+    "ROC AUC": 0.6022,
+    "PR AUC": 0.2415,
+    "Precision": 0.2552,
+    "Recall": 0.3353,
+    "F1 Score": 0.2898,
+    "Brier Score": 0.19164,
+    "Balanced Acc": 0.557,
+    "Threshold": 0.5,
+    "Latency (ms/1k)": 1.82
+  },
+  {
+    "Model": "XGBoost (Op. 0.28)",
+    "ROC AUC": 0.6022,
+    "PR AUC": 0.2415,
+    "Precision": 0.2172,
+    "Recall": 0.7765,
+    "F1 Score": 0.3395,
+    "Brier Score": 0.19164,
+    "Balanced Acc": 0.572,
+    "Threshold": 0.2774941921234131,
+    "Latency (ms/1k)": 1.82
+  },
+  {
+    "Model": "XGBoost Calibrated (Op. 0.28)",
+    "ROC AUC": 0.6022,
+    "PR AUC": 0.2415,
+    "Precision": 0.0,
+    "Recall": 0.0,
+    "F1 Score": 0.0,
+    "Brier Score": 0.15006,
+    "Balanced Acc": 0.4999,
+    "Threshold": 0.2774941921234131,
+    "Latency (ms/1k)": 1.82
+  }
+]

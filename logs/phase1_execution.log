@@ -1,0 +1,100 @@
+2026-10-26 21:29:38,720 [INFO] root - Loaded configuration from: /Users/ritikraj/Desktop/aml/configs/phase1.yaml
+2026-10-26 21:29:38,721 [INFO] flight_delay.pipeline - ======================================================================
+2026-10-26 21:29:38,721 [INFO] flight_delay.pipeline - STARTING PHASE 1 FLIGHT DELAY PREDICTION PIPELINE
+2026-10-26 21:29:38,721 [INFO] flight_delay.pipeline - ======================================================================
+2026-10-26 21:29:38,725 [INFO] flight_delay.pipeline - Raw data file metadata: {'path': '/Users/ritikraj/Desktop/aml/data/raw/flights.parquet', 'format': '.parquet', 'size_bytes': 144139267, 'size_mb': 137.46, 'num_rows': 5819079, 'num_cols': 31, 'columns': ['YEAR', 'MONTH', 'DAY', 'DAY_OF_WEEK', 'AIRLINE', 'FLIGHT_NUMBER', 'TAIL_NUMBER', 'ORIGIN_AIRPORT', 'DESTINATION_AIRPORT', 'SCHEDULED_DEPARTURE', 'DEPARTURE_TIME', 'DEPARTURE_DELAY', 'TAXI_OUT', 'WHEELS_OFF', 'SCHEDULED_TIME', 'ELAPSED_TIME', 'AIR_TIME', 'DISTANCE', 'WHEELS_ON', 'TAXI_IN', 'SCHEDULED_ARRIVAL', 'ARRIVAL_TIME', 'ARRIVAL_DELAY', 'DIVERTED', 'CANCELLED', 'CANCELLATION_REASON', 'AIR_SYSTEM_DELAY', 'SECURITY_DELAY', 'AIRLINE_DELAY', 'LATE_AIRCRAFT_DELAY', 'WEATHER_DELAY']}
+2026-10-26 21:29:38,725 [INFO] flight_delay.data_loader - Loading data from /Users/ritikraj/Desktop/aml/data/raw/flights.parquet (format: .parquet)...
+2026-10-26 21:29:40,384 [INFO] flight_delay.data_loader - Sampled 350,000 rows from 5,819,079 total rows preserving temporal distribution.
+2026-10-26 21:29:40,385 [INFO] flight_delay.data_loader - Successfully loaded DataFrame with shape (350000, 31).
+2026-10-26 21:29:40,699 [INFO] flight_delay.data_validation - Excluded 6,115 records with missing ARRIVAL_DELAY.
+2026-10-26 21:29:41,721 [INFO] flight_delay.data_validation - Saved data quality report to /Users/ritikraj/Desktop/aml/results/data_quality/data_quality_report.json.
+2026-10-26 21:29:41,722 [INFO] flight_delay.eda - Executing comprehensive Exploratory Data Analysis...
+2026-10-26 21:29:42,490 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 21:29:42,490 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 21:29:42,500 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 21:29:42,501 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 21:29:43,418 [INFO] flight_delay.eda - EDA successfully completed. Aggregates saved to /Users/ritikraj/Desktop/aml/results/eda, figures to /Users/ritikraj/Desktop/aml/results/figures.
+2026-10-26 21:29:43,471 [INFO] flight_delay.temporal_split - Temporal Split: 245 train dates, 52 val dates, 54 test dates out of 351 total unique dates.
+2026-10-26 21:29:43,749 [INFO] flight_delay.temporal_split - Saved temporal split manifest to /Users/ritikraj/Desktop/aml/artifacts/manifests/split_manifest.json.
+2026-10-26 21:29:45,117 [INFO] flight_delay.historical_features - Fitting HistoricalFeatureExtractor on training partition...
+2026-10-26 21:29:45,119 [INFO] flight_delay.historical_features - Global training delay prior: 0.2001
+2026-10-26 21:29:45,140 [INFO] flight_delay.historical_features - Constructed historical lookup for 'AIRLINE' with 14 unique categories.
+2026-10-26 21:29:45,161 [INFO] flight_delay.historical_features - Constructed historical lookup for 'ORIGIN_AIRPORT' with 322 unique categories.
+2026-10-26 21:29:45,176 [INFO] flight_delay.historical_features - Constructed historical lookup for 'DESTINATION_AIRPORT' with 322 unique categories.
+2026-10-26 21:29:45,200 [INFO] flight_delay.historical_features - Constructed historical lookup for 'ROUTE' with 4,386 unique categories.
+2026-10-26 21:29:50,214 [INFO] flight_delay.feature_engineering - Leakage audit passed: 0 forbidden columns found across 37 features.
+2026-10-26 21:29:50,214 [INFO] flight_delay.preprocessing - Fitting PreprocessingPipeline on training data...
+2026-10-26 21:29:51,175 [INFO] flight_delay.preprocessing - Preprocessing fitted. Output dimensionality: 136 features.
+2026-10-26 21:29:51,825 [INFO] flight_delay.preprocessing - Saved PreprocessingPipeline to /Users/ritikraj/Desktop/aml/artifacts/metadata/preprocessor.joblib.
+2026-10-26 21:29:51,826 [INFO] flight_delay.train_logistic - Training Logistic Regression with params: {'C': 1.0, 'penalty': 'l2', 'solver': 'lbfgs', 'max_iter': 1000, 'class_weight': 'balanced', 'random_state': 42} on (241864, 136) samples...
+2026-10-26 21:29:55,014 [INFO] flight_delay.train_logistic - Logistic Regression training completed in 3.19s.
+2026-10-26 21:29:55,019 [INFO] flight_delay.train_logistic - Saved Logistic Regression model to /Users/ritikraj/Desktop/aml/models/logistic_regression/model.joblib.
+2026-10-26 21:29:55,085 [INFO] flight_delay.train_xgboost - Auto-calculated scale_pos_weight from train class ratio: 3.998
+2026-10-26 21:29:55,085 [INFO] flight_delay.train_xgboost - Training XGBoost with params: {'n_estimators': 300, 'max_depth': 6, 'learning_rate': 0.05, 'subsample': 0.8, 'colsample_bytree': 0.8, 'min_child_weight': 3, 'scale_pos_weight': 3.998, 'eval_metric': 'logloss', 'early_stopping_rounds': 25, 'random_state': 42, 'n_jobs': -1} on (241864, 136) samples...
+2026-10-26 21:30:59,480 [INFO] flight_delay.train_xgboost - XGBoost training completed in 64.39s.
+2026-10-26 21:30:59,498 [INFO] flight_delay.train_xgboost - Saved XGBoost model to /Users/ritikraj/Desktop/aml/models/xgboost/model.joblib.
+2026-10-26 21:30:59,653 [INFO] flight_delay.evaluation - Threshold Optimization: {'selected_threshold': 0.6796, 'rule_applied': 'Target precision of >= 70% met on validation set', 'target_precision_requested': 0.7, 'achieved_target_on_validation': True, 'validation_precision_at_threshold': 1.0, 'validation_recall_at_threshold': 0.0002, 'validation_f1_at_threshold': 0.0003}
+2026-10-26 21:30:59,654 [INFO] flight_delay.calibration - Fitting sigmoid probability calibrator on validation predictions...
+2026-10-26 21:31:00,926 [INFO] flight_delay.explainability - Saved Logistic Regression coefficients to /Users/ritikraj/Desktop/aml/results/feature_importance/logistic_regression_coefficients.csv.
+2026-10-26 21:31:01,111 [INFO] flight_delay.explainability - Saved XGBoost feature importance to /Users/ritikraj/Desktop/aml/results/feature_importance/xgboost_feature_importance.csv.
+2026-10-26 21:31:01,294 [INFO] flight_delay.explainability - Computing permutation importance for XGBoost on 3000 validation samples...
+2026-10-26 21:31:08,679 [INFO] flight_delay.error_analysis - Running error analysis for XGBoost at decision threshold 0.6796...
+2026-10-26 21:31:09,041 [INFO] flight_delay.error_analysis - Error analysis completed. Subgroup breakdowns saved under /Users/ritikraj/Desktop/aml/results/error_analysis.
+2026-10-26 21:31:09,053 [INFO] flight_delay.reporting - Saved Markdown project report to /Users/ritikraj/Desktop/aml/reports/phase1_report.md.
+2026-10-26 21:31:09,925 [INFO] flight_delay.reporting - Successfully generated Phase 1 PDF report at: /Users/ritikraj/Desktop/aml/reports/phase1_report.pdf
+2026-10-26 21:31:09,926 [INFO] flight_delay.pipeline - Verified PDF report exists (1,174,818 bytes).
+2026-10-26 21:31:10,189 [INFO] root - ======================================================================
+2026-10-26 21:31:10,189 [INFO] root - PHASE 1 EXECUTION COMPLETED SUCCESSFULLY!
+2026-10-26 21:31:10,189 [INFO] root - PDF Report: /Users/ritikraj/Desktop/aml/reports/phase1_report.pdf
+2026-10-26 21:31:10,189 [INFO] root - Markdown Report: /Users/ritikraj/Desktop/aml/reports/phase1_report.md
+2026-10-26 21:31:10,189 [INFO] root - ======================================================================
+2026-10-26 22:49:05,292 [INFO] root - Loaded configuration from: /Users/ritikraj/Desktop/aml/configs/phase1.yaml
+2026-10-26 22:49:05,293 [INFO] flight_delay.pipeline - ======================================================================
+2026-10-26 22:49:05,293 [INFO] flight_delay.pipeline - STARTING PHASE 1 FLIGHT DELAY PREDICTION PIPELINE
+2026-10-26 22:49:05,293 [INFO] flight_delay.pipeline - ======================================================================
+2026-10-26 22:49:05,304 [INFO] flight_delay.pipeline - Raw data file metadata: {'path': '/Users/ritikraj/Desktop/aml/data/raw/flights.parquet', 'format': '.parquet', 'size_bytes': 144139267, 'size_mb': 137.46, 'num_rows': 5819079, 'num_cols': 31, 'columns': ['YEAR', 'MONTH', 'DAY', 'DAY_OF_WEEK', 'AIRLINE', 'FLIGHT_NUMBER', 'TAIL_NUMBER', 'ORIGIN_AIRPORT', 'DESTINATION_AIRPORT', 'SCHEDULED_DEPARTURE', 'DEPARTURE_TIME', 'DEPARTURE_DELAY', 'TAXI_OUT', 'WHEELS_OFF', 'SCHEDULED_TIME', 'ELAPSED_TIME', 'AIR_TIME', 'DISTANCE', 'WHEELS_ON', 'TAXI_IN', 'SCHEDULED_ARRIVAL', 'ARRIVAL_TIME', 'ARRIVAL_DELAY', 'DIVERTED', 'CANCELLED', 'CANCELLATION_REASON', 'AIR_SYSTEM_DELAY', 'SECURITY_DELAY', 'AIRLINE_DELAY', 'LATE_AIRCRAFT_DELAY', 'WEATHER_DELAY']}
+2026-10-26 22:49:05,304 [INFO] flight_delay.data_loader - Loading data from /Users/ritikraj/Desktop/aml/data/raw/flights.parquet (format: .parquet)...
+2026-10-26 22:49:06,909 [INFO] flight_delay.data_loader - Sampled 50,000 rows from 5,819,079 total rows preserving temporal distribution.
+2026-10-26 22:49:06,909 [INFO] flight_delay.data_loader - Successfully loaded DataFrame with shape (50000, 31).
+2026-10-26 22:49:06,957 [INFO] flight_delay.data_validation - Excluded 904 records with missing ARRIVAL_DELAY.
+2026-10-26 22:49:07,122 [INFO] flight_delay.data_validation - Saved data quality report to /Users/ritikraj/Desktop/aml/results/data_quality/data_quality_report.json.
+2026-10-26 22:49:07,123 [INFO] flight_delay.eda - Executing comprehensive Exploratory Data Analysis...
+2026-10-26 22:49:07,759 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 22:49:07,761 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 22:49:07,764 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 22:49:07,765 [INFO] matplotlib.category - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-10-26 22:49:08,568 [INFO] flight_delay.eda - EDA successfully completed. Aggregates saved to /Users/ritikraj/Desktop/aml/results/eda, figures to /Users/ritikraj/Desktop/aml/results/figures.
+2026-10-26 22:49:08,578 [INFO] flight_delay.temporal_split - Temporal Split: 254 train dates, 54 val dates, 56 test dates out of 364 total unique dates.
+2026-10-26 22:49:08,640 [INFO] flight_delay.temporal_split - Saved temporal split manifest to /Users/ritikraj/Desktop/aml/artifacts/manifests/split_manifest.json.
+2026-10-26 22:49:08,915 [INFO] flight_delay.historical_features - Fitting HistoricalFeatureExtractor on training partition...
+2026-10-26 22:49:08,915 [INFO] flight_delay.historical_features - Global training delay prior: 0.1993
+2026-10-26 22:49:08,918 [INFO] flight_delay.historical_features - Constructed historical lookup for 'AIRLINE' with 14 unique categories.
+2026-10-26 22:49:08,920 [INFO] flight_delay.historical_features - Constructed historical lookup for 'ORIGIN_AIRPORT' with 314 unique categories.
+2026-10-26 22:49:08,922 [INFO] flight_delay.historical_features - Constructed historical lookup for 'DESTINATION_AIRPORT' with 316 unique categories.
+2026-10-26 22:49:08,926 [INFO] flight_delay.historical_features - Constructed historical lookup for 'ROUTE' with 3,913 unique categories.
+2026-10-26 22:49:12,793 [INFO] flight_delay.feature_engineering - Leakage audit passed: 0 forbidden columns found across 37 features.
+2026-10-26 22:49:12,794 [INFO] flight_delay.preprocessing - Fitting PreprocessingPipeline on training data...
+2026-10-26 22:49:12,911 [INFO] flight_delay.preprocessing - Preprocessing fitted. Output dimensionality: 136 features.
+2026-10-26 22:49:12,969 [INFO] flight_delay.preprocessing - Saved PreprocessingPipeline to /Users/ritikraj/Desktop/aml/artifacts/metadata/preprocessor.joblib.
+2026-10-26 22:49:12,970 [INFO] flight_delay.train_logistic - Training Logistic Regression with params: {'C': 1.0, 'penalty': 'l2', 'solver': 'lbfgs', 'max_iter': 1000, 'class_weight': 'balanced', 'random_state': 42} on (34520, 136) samples...
+2026-10-26 22:49:13,648 [INFO] flight_delay.train_logistic - Logistic Regression training completed in 0.68s.
+2026-10-26 22:49:13,650 [INFO] flight_delay.train_logistic - Saved Logistic Regression model to /Users/ritikraj/Desktop/aml/models/logistic_regression/model.joblib.
+2026-10-26 22:49:13,657 [INFO] flight_delay.train_xgboost - Auto-calculated scale_pos_weight from train class ratio: 4.018
+2026-10-26 22:49:13,657 [INFO] flight_delay.train_xgboost - Training XGBoost with params: {'n_estimators': 300, 'max_depth': 6, 'learning_rate': 0.05, 'subsample': 0.8, 'colsample_bytree': 0.8, 'min_child_weight': 3, 'scale_pos_weight': 4.018, 'eval_metric': 'logloss', 'early_stopping_rounds': 25, 'random_state': 42, 'n_jobs': -1} on (34520, 136) samples...
+2026-10-26 22:49:24,022 [INFO] flight_delay.train_xgboost - XGBoost training completed in 10.36s.
+2026-10-26 22:49:24,028 [INFO] flight_delay.train_xgboost - Saved XGBoost model to /Users/ritikraj/Desktop/aml/models/xgboost/model.joblib.
+2026-10-26 22:49:24,079 [INFO] flight_delay.evaluation - Threshold Optimization: {'selected_threshold': 0.2775, 'rule_applied': 'Target precision 70% unachievable; selected threshold maximizing validation F1', 'target_precision_requested': 0.7, 'achieved_target_on_validation': False, 'validation_precision_at_threshold': 0.1499, 'validation_recall_at_threshold': 0.6925, 'validation_f1_at_threshold': 0.2464}
+2026-10-26 22:49:24,080 [INFO] flight_delay.calibration - Fitting sigmoid probability calibrator on validation predictions...
+2026-10-26 22:49:24,879 [INFO] flight_delay.explainability - Saved Logistic Regression coefficients to /Users/ritikraj/Desktop/aml/results/feature_importance/logistic_regression_coefficients.csv.
+2026-10-26 22:49:25,071 [INFO] flight_delay.explainability - Saved XGBoost feature importance to /Users/ritikraj/Desktop/aml/results/feature_importance/xgboost_feature_importance.csv.
+2026-10-26 22:49:25,270 [INFO] flight_delay.explainability - Computing permutation importance for XGBoost on 3000 validation samples...
+2026-10-26 22:49:32,244 [INFO] flight_delay.error_analysis - Running error analysis for XGBoost at decision threshold 0.2775...
+2026-10-26 22:49:32,615 [INFO] flight_delay.error_analysis - Error analysis completed. Subgroup breakdowns saved under /Users/ritikraj/Desktop/aml/results/error_analysis.
+2026-10-26 22:49:32,624 [INFO] flight_delay.reporting - Saved Markdown project report to /Users/ritikraj/Desktop/aml/reports/phase1_report.md.
+2026-10-26 22:49:33,526 [INFO] flight_delay.reporting - Successfully generated Phase 1 PDF report at: /Users/ritikraj/Desktop/aml/reports/phase1_report.pdf
+2026-10-26 22:49:33,527 [INFO] flight_delay.pipeline - Verified PDF report exists (1,219,277 bytes).
+2026-10-26 22:49:33,567 [INFO] root - ======================================================================
+2026-10-26 22:49:33,568 [INFO] root - PHASE 1 EXECUTION COMPLETED SUCCESSFULLY!
+2026-10-26 22:49:33,568 [INFO] root - PDF Report: /Users/ritikraj/Desktop/aml/reports/phase1_report.pdf
+2026-10-26 22:49:33,568 [INFO] root - Markdown Report: /Users/ritikraj/Desktop/aml/reports/phase1_report.md
+2026-10-26 22:49:33,568 [INFO] root - ======================================================================

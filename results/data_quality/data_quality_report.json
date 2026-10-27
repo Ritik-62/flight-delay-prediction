@@ -1,0 +1,64 @@
+{
+  "initial_rows": 50000,
+  "final_rows": 49096,
+  "total_dropped": 904,
+  "drop_rate_pct": 1.81,
+  "exclusions_breakdown": {
+    "missing_target_or_cancelled_diverted": 904,
+    "duplicate_records": 0,
+    "invalid_date_values": 0,
+    "unparseable_dates": 0,
+    "suspicious_nonpositive_distance_or_time": 0,
+    "invalid_scheduled_times": 0
+  },
+  "target_distribution": {
+    "negative_class_count_0": 39975,
+    "positive_class_count_1": 9121,
+    "prevalence_delayed_pct": 18.58,
+    "imbalance_ratio": 4.38
+  },
+  "date_range": {
+    "min_date": "2015-01-01",
+    "max_date": "2015-12-30",
+    "unique_calendar_dates": 364
+  },
+  "cardinality": {
+    "unique_airlines": 14,
+    "unique_origin_airports": 567,
+    "unique_destination_airports": 558,
+    "unique_routes": 6131
+  },
+  "missing_values_initial": {
+    "YEAR": 0,
+    "MONTH": 0,
+    "DAY": 0,
+    "DAY_OF_WEEK": 0,
+    "AIRLINE": 0,
+    "FLIGHT_NUMBER": 0,
+    "TAIL_NUMBER": 147,
+    "ORIGIN_AIRPORT": 0,
+    "DESTINATION_AIRPORT": 0,
+    "SCHEDULED_DEPARTURE": 0,
+    "DEPARTURE_TIME": 733,
+    "DEPARTURE_DELAY": 733,
+    "TAXI_OUT": 760,
+    "WHEELS_OFF": 760,
+    "SCHEDULED_TIME": 0,
+    "ELAPSED_TIME": 904,
+    "AIR_TIME": 904,
+    "DISTANCE": 0,
+    "WHEELS_ON": 790,
+    "TAXI_IN": 790,
+    "SCHEDULED_ARRIVAL": 0,
+    "ARRIVAL_TIME": 790,
+    "ARRIVAL_DELAY": 904,
+    "DIVERTED": 0,
+    "CANCELLED": 0,
+    "CANCELLATION_REASON": 49232,
+    "AIR_SYSTEM_DELAY": 40879,
+    "SECURITY_DELAY": 40879,
+    "AIRLINE_DELAY": 40879,
+    "LATE_AIRCRAFT_DELAY": 40879,
+    "WEATHER_DELAY": 40879
+  }
+}

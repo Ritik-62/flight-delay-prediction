@@ -1,0 +1,245 @@
+{
+  "manifest_version": "1.0.0",
+  "generated_timestamp": "2026-10-26T22:49:35.915688",
+  "summary": {
+    "total_deliverables": 33,
+    "generated": 33,
+    "missing": 0,
+    "completion_pct": 100.0,
+    "models_verified_loadable": true,
+    "pdf_report_valid": true
+  },
+  "artifacts": [
+    {
+      "path": "models/logistic_regression/model.joblib",
+      "status": "GENERATED",
+      "size_bytes": 1967,
+      "size_kb": 1.92,
+      "last_modified": "2026-10-26T22:49:13.649875"
+    },
+    {
+      "path": "models/logistic_regression/metadata.json",
+      "status": "GENERATED",
+      "size_bytes": 370,
+      "size_kb": 0.36,
+      "last_modified": "2026-10-26T22:49:13.650223"
+    },
+    {
+      "path": "models/xgboost/model.joblib",
+      "status": "GENERATED",
+      "size_bytes": 1042269,
+      "size_kb": 1017.84,
+      "last_modified": "2026-10-26T22:49:24.028144"
+    },
+    {
+      "path": "models/xgboost/metadata.json",
+      "status": "GENERATED",
+      "size_bytes": 486,
+      "size_kb": 0.47,
+      "last_modified": "2026-10-26T22:49:24.028735"
+    },
+    {
+      "path": "models/calibrator.joblib",
+      "status": "GENERATED",
+      "size_bytes": 987,
+      "size_kb": 0.96,
+      "last_modified": "2026-10-26T22:49:24.086183"
+    },
+    {
+      "path": "artifacts/metadata/preprocessor.joblib",
+      "status": "GENERATED",
+      "size_bytes": 12159,
+      "size_kb": 11.87,
+      "last_modified": "2026-10-26T22:49:12.969535"
+    },
+    {
+      "path": "artifacts/metadata/feature_schema.json",
+      "status": "GENERATED",
+      "size_bytes": 5049,
+      "size_kb": 4.93,
+      "last_modified": "2026-10-26T22:49:12.970251"
+    },
+    {
+      "path": "results/data_quality/data_quality_report.json",
+      "status": "GENERATED",
+      "size_bytes": 1573,
+      "size_kb": 1.54,
+      "last_modified": "2026-10-26T22:49:07.122708"
+    },
+    {
+      "path": "artifacts/manifests/split_manifest.json",
+      "status": "GENERATED",
+      "size_bytes": 919,
+      "size_kb": 0.9,
+      "last_modified": "2026-10-26T22:49:08.640558"
+    },
+    {
+      "path": "results/metrics/model_comparison.csv",
+      "status": "GENERATED",
+      "size_bytes": 559,
+      "size_kb": 0.55,
+      "last_modified": "2026-10-26T22:49:24.302621"
+    },
+    {
+      "path": "results/metrics/test_metrics.json",
+      "status": "GENERATED",
+      "size_bytes": 1403,
+      "size_kb": 1.37,
+      "last_modified": "2026-10-26T22:49:24.302963"
+    },
+    {
+      "path": "results/metrics/operational_threshold.json",
+      "status": "GENERATED",
+      "size_bytes": 344,
+      "size_kb": 0.34,
+      "last_modified": "2026-10-26T22:49:24.080415"
+    },
+    {
+      "path": "results/predictions/test_predictions.csv",
+      "status": "GENERATED",
+      "size_bytes": 467369,
+      "size_kb": 456.42,
+      "last_modified": "2026-10-26T22:49:24.325724"
+    },
+    {
+      "path": "results/predictions/val_predictions.csv",
+      "status": "GENERATED",
+      "size_bytes": 240677,
+      "size_kb": 235.04,
+      "last_modified": "2026-10-26T22:49:24.337471"
+    },
+    {
+      "path": "results/calibration/calibration_stats.json",
+      "status": "GENERATED",
+      "size_bytes": 106,
+      "size_kb": 0.1,
+      "last_modified": "2026-10-26T22:49:24.253165"
+    },
+    {
+      "path": "results/feature_importance/logistic_regression_coefficients.csv",
+      "status": "GENERATED",
+      "size_bytes": 11623,
+      "size_kb": 11.35,
+      "last_modified": "2026-10-26T22:49:24.879119"
+    },
+    {
+      "path": "results/feature_importance/xgboost_feature_importance.csv",
+      "status": "GENERATED",
+      "size_bytes": 5100,
+      "size_kb": 4.98,
+      "last_modified": "2026-10-26T22:49:25.071485"
+    },
+    {
+      "path": "results/error_analysis/error_analysis_airline_xgboost.csv",
+      "status": "GENERATED",
+      "size_bytes": 970,
+      "size_kb": 0.95,
+      "last_modified": "2026-10-26T22:49:32.276376"
+    },
+    {
+      "path": "results/error_analysis/error_analysis_departure_hour_xgboost.csv",
+      "status": "GENERATED",
+      "size_bytes": 1040,
+      "size_kb": 1.02,
+      "last_modified": "2026-10-26T22:49:32.318969"
+    },
+    {
+      "path": "results/figures/target_distribution.png",
+      "status": "GENERATED",
+      "size_bytes": 110013,
+      "size_kb": 107.43,
+      "last_modified": "2026-10-26T22:49:07.299521"
+    },
+    {
+      "path": "results/figures/delay_rate_by_carrier.png",
+      "status": "GENERATED",
+      "size_bytes": 133362,
+      "size_kb": 130.24,
+      "last_modified": "2026-10-26T22:49:07.482821"
+    },
+    {
+      "path": "results/figures/delay_rate_by_departure_hour.png",
+      "status": "GENERATED",
+      "size_bytes": 232705,
+      "size_kb": 227.25,
+      "last_modified": "2026-10-26T22:49:07.741703"
+    },
+    {
+      "path": "results/figures/delay_rate_by_weekday_and_month.png",
+      "status": "GENERATED",
+      "size_bytes": 225009,
+      "size_kb": 219.74,
+      "last_modified": "2026-10-26T22:49:07.999986"
+    },
+    {
+      "path": "results/figures/delay_rate_by_airport.png",
+      "status": "GENERATED",
+      "size_bytes": 135271,
+      "size_kb": 132.1,
+      "last_modified": "2026-10-26T22:49:08.180714"
+    },
+    {
+      "path": "results/figures/delay_prevalence_over_time.png",
+      "status": "GENERATED",
+      "size_bytes": 438997,
+      "size_kb": 428.71,
+      "last_modified": "2026-10-26T22:49:08.433439"
+    },
+    {
+      "path": "results/figures/roc_curves.png",
+      "status": "GENERATED",
+      "size_bytes": 207897,
+      "size_kb": 203.02,
+      "last_modified": "2026-10-26T22:49:24.472595"
+    },
+    {
+      "path": "results/figures/precision_recall_curves.png",
+      "status": "GENERATED",
+      "size_bytes": 175974,
+      "size_kb": 171.85,
+      "last_modified": "2026-10-26T22:49:24.638441"
+    },
+    {
+      "path": "results/figures/confusion_matrices.png",
+      "status": "GENERATED",
+      "size_bytes": 136795,
+      "size_kb": 133.59,
+      "last_modified": "2026-10-26T22:49:24.877075"
+    },
+    {
+      "path": "results/figures/calibration_curve.png",
+      "status": "GENERATED",
+      "size_bytes": 192455,
+      "size_kb": 187.94,
+      "last_modified": "2026-10-26T22:49:24.252597"
+    },
+    {
+      "path": "results/figures/feature_importance.png",
+      "status": "GENERATED",
+      "size_bytes": 262503,
+      "size_kb": 256.35,
+      "last_modified": "2026-10-26T22:49:32.244078"
+    },
+    {
+      "path": "results/figures/error_analysis.png",
+      "status": "GENERATED",
+      "size_bytes": 164059,
+      "size_kb": 160.21,
+      "last_modified": "2026-10-26T22:49:32.608512"
+    },
+    {
+      "path": "reports/phase1_report.md",
+      "status": "GENERATED",
+      "size_bytes": 7169,
+      "size_kb": 7.0,
+      "last_modified": "2026-10-26T22:49:32.624857"
+    },
+    {
+      "path": "reports/phase1_report.pdf",
+      "status": "GENERATED",
+      "size_bytes": 1219277,
+      "size_kb": 1190.7,
+      "last_modified": "2026-10-26T22:49:33.526715"
+    }
+  ]
+}

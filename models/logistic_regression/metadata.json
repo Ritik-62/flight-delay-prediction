@@ -1,0 +1,17 @@
+{
+  "model_type": "LogisticRegression",
+  "hyperparameters": {
+    "C": 1.0,
+    "penalty": "l2",
+    "solver": "lbfgs",
+    "max_iter": 1000,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "training_duration_seconds": 0.678,
+  "n_samples": 34520,
+  "n_features": 136,
+  "n_iter_": 118,
+  "intercept_": -0.22169685674168776,
+  "convergence_warnings": []
+}

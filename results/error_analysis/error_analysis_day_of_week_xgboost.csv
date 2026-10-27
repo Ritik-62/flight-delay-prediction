@@ -1,0 +1,8 @@
+DAY_OF_WEEK,Total_Flights,Actual_Delays,Predicted_Delays,False_Positives,False_Negatives,True_Positives,Day_Name,Subgroup_Precision,Subgroup_Recall
+1,1082,201,719,556,38,163,Mon,0.2267,0.8109
+2,1082,222,733,552,41,181,Tue,0.2469,0.8153
+3,1053,232,674,508,66,166,Wed,0.2463,0.7155
+4,1047,205,718,553,40,165,Thu,0.2298,0.8049
+5,1067,179,766,618,31,148,Fri,0.1932,0.8268
+6,922,140,554,459,45,95,Sat,0.1715,0.6786
+7,1074,172,665,534,41,131,Sun,0.197,0.7616

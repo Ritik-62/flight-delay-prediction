@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flight-delay-prediction"
+version = "1.0.0"
+description = "Flight Delay Prediction via Gradient Boosting and Temporal Deep Learning (Phase 1 Baseline)"
+authors = [{ name = "ML Research Engineering" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "scipy>=1.11.0",
+    "scikit-learn>=1.2.0",
+    "xgboost>=1.7.0",
+    "matplotlib>=3.7.0",
+    "reportlab>=4.0.0",
+    "pytest>=7.3.0",
+    "pyyaml>=6.0",
+    "joblib>=1.2.0",
+    "pyarrow>=14.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]

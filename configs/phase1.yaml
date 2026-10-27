@@ -1,0 +1,115 @@
+project:
+  name: "flight-delay-prediction"
+  phase: "Phase 1 - Baseline Models & Evaluation"
+  version: "1.0.0"
+  author: "ML Research Engineering"
+  seed: 42
+
+data:
+  raw_path: "data/raw/flights.parquet"
+  airlines_path: "data/raw/airlines.parquet"
+  airports_path: "data/raw/airports.parquet"
+  sample_size: 350000  # Set to null for full 5.8M rows; 350,000 provides high statistical power and fast execution
+  chunk_size: 100000
+
+target:
+  name: "ARR_DEL15"
+  raw_target_col: "ARRIVAL_DELAY"
+  threshold_minutes: 15
+  description: "Binary indicator: 1 if arrival delay >= 15 minutes, 0 otherwise"
+
+prediction_timestamp:
+  minutes_before_departure: 60
+  description: "Fixed decision point at T - 60 minutes prior to scheduled departure"
+  assumption_notes: >
+    All operational predictors must be known at least 60 minutes prior to scheduled departure.
+    Actual departure delay, taxi times, wheels-off times, and post-flight operational outcomes
+    are strictly excluded to guarantee zero target and temporal leakage.
+
+leakage:
+  denylist:
+    - "ARR_DELAY"
+    - "ARR_DELAY_NEW"
+    - "ARR_DEL15"
+    - "ARR_DELAY_GROUP"
+    - "DEP_DELAY"
+    - "DEP_DELAY_NEW"
+    - "DEP_DEL15"
+    - "DEP_DELAY_GROUP"
+    - "DEPARTURE_TIME"
+    - "ARRIVAL_TIME"
+    - "WHEELS_OFF"
+    - "WHEELS_ON"
+    - "TAXI_OUT"
+    - "TAXI_IN"
+    - "ELAPSED_TIME"
+    - "AIR_TIME"
+    - "CANCELLATION_REASON"
+    - "AIR_SYSTEM_DELAY"
+    - "SECURITY_DELAY"
+    - "AIRLINE_DELAY"
+    - "LATE_AIRCRAFT_DELAY"
+    - "WEATHER_DELAY"
+    - "DIVERTED"
+    - "CANCELLED"
+  allowlist:
+    - "YEAR"
+    - "MONTH"
+    - "DAY"
+    - "DAY_OF_WEEK"
+    - "AIRLINE"
+    - "ORIGIN_AIRPORT"
+    - "DESTINATION_AIRPORT"
+    - "ROUTE"
+    - "SCHEDULED_DEPARTURE"
+    - "SCHEDULED_ARRIVAL"
+    - "SCHEDULED_TIME"
+    - "DISTANCE"
+
+temporal_split:
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  embargo_days: 1
+  date_column: "FLIGHT_DATE"
+
+historical_features:
+  smoothing_weight: 15.0
+  min_samples: 5
+  entities:
+    - "AIRLINE"
+    - "ORIGIN_AIRPORT"
+    - "DESTINATION_AIRPORT"
+    - "ROUTE"
+
+models:
+  logistic_regression:
+    penalty: "l2"
+    C: 1.0
+    solver: "lbfgs"
+    max_iter: 1000
+    class_weight: "balanced"
+    random_state: 42
+  xgboost:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_weight: 3
+    scale_pos_weight: "auto"
+    eval_metric: "logloss"
+    early_stopping_rounds: 25
+    random_state: 42
+
+evaluation:
+  target_precision: 0.70
+  calibration_method: "sigmoid"
+  n_bins_calibration: 10
+
+paths:
+  results_dir: "results"
+  models_dir: "models"
+  reports_dir: "reports"
+  logs_dir: "logs"
+  artifacts_dir: "artifacts"

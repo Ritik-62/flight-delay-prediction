@@ -1,0 +1,9 @@
+{
+  "selected_threshold": 0.2775,
+  "rule_applied": "Target precision 70% unachievable; selected threshold maximizing validation F1",
+  "target_precision_requested": 0.7,
+  "achieved_target_on_validation": false,
+  "validation_precision_at_threshold": 0.1499,
+  "validation_recall_at_threshold": 0.6925,
+  "validation_f1_at_threshold": 0.2464
+}
