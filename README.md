@@ -10,7 +10,7 @@
 
 ## 1. Project Purpose & Scope
 
-The **Flight Delay Prediction** initiative builds an auditable, production-grade machine learning system to forecast substantial flight arrival delays before flight departure. 
+The **Flight Delay Prediction** initiative builds an auditable, production-grade machine learning system to forecast substantial flight arrival delays before flight departure
 
 ### Phase 1 Scope (This Deliverable)
 Phase 1 focuses exclusively on establishing a mathematically sound, **leakage-safe tabular baseline**:
