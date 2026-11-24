@@ -1,0 +1,38 @@
+{
+  "total_records": 147389,
+  "total_calendar_dates": 358,
+  "date_range": {
+    "start": "2015-01-01",
+    "end": "2015-12-24"
+  },
+  "train": {
+    "start_date": "2015-01-01",
+    "end_date": "2015-09-07",
+    "num_calendar_dates": 250,
+    "record_count": 103747,
+    "record_percentage": 70.39,
+    "positive_count": 20873,
+    "negative_count": 82874,
+    "prevalence_delayed_pct": 20.12
+  },
+  "validation": {
+    "start_date": "2015-09-08",
+    "end_date": "2015-10-30",
+    "num_calendar_dates": 53,
+    "record_count": 21776,
+    "record_percentage": 14.77,
+    "positive_count": 2769,
+    "negative_count": 19007,
+    "prevalence_delayed_pct": 12.72
+  },
+  "test": {
+    "start_date": "2015-10-31",
+    "end_date": "2015-12-24",
+    "num_calendar_dates": 55,
+    "record_count": 21866,
+    "record_percentage": 14.84,
+    "positive_count": 3499,
+    "negative_count": 18367,
+    "prevalence_delayed_pct": 16.0
+  }
+}
