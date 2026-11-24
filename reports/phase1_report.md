@@ -1,9 +1,8 @@
 # Flight Delay Prediction via Gradient Boosting and Temporal Deep Learning
 ## Phase 1 Research & Engineering Report: Leakage-Safe Baselines
-
-**Author:** Antigravity ML Research Engineering  
+ 
 **Version:** 1.0.0 — Phase 1 Deliverable  
-**Date:** October 26, 2026  
+**Date:** October 27, 2026  
 **Target:** Arrival Delay $\ge 15$ Minutes (`ARR_DEL15`)  
 **Prediction Horizon:** $T - 60$ Minutes Before Scheduled Departure
 
@@ -17,23 +16,23 @@ All models operate under a strict operational constraint: **features are restric
 ### Key Benchmark Results (Held-Out Test Set)
 | Model                           |   ROC AUC |   PR AUC |   Precision |   Recall |   F1 Score |   Brier Score |   Balanced Acc |   Threshold |   Latency (ms/1k) |
 |:--------------------------------|----------:|---------:|------------:|---------:|-----------:|--------------:|---------------:|------------:|------------------:|
-| Logistic Regression (Def. 0.50) |    0.5964 |   0.2411 |      0.2479 |   0.3546 |     0.2918 |       0.20198 |         0.5557 |    0.5      |              0.06 |
-| Logistic Regression (Op. 0.28)  |    0.5964 |   0.2411 |      0.1999 |   0.8756 |     0.3255 |       0.20198 |         0.5417 |    0.277494 |              0.06 |
-| XGBoost (Def. 0.50)             |    0.6022 |   0.2415 |      0.2552 |   0.3353 |     0.2898 |       0.19164 |         0.557  |    0.5      |              1.82 |
-| XGBoost (Op. 0.28)              |    0.6022 |   0.2415 |      0.2172 |   0.7765 |     0.3395 |       0.19164 |         0.572  |    0.277494 |              1.82 |
-| XGBoost Calibrated (Op. 0.28)   |    0.6022 |   0.2415 |      0      |   0      |     0      |       0.15006 |         0.4999 |    0.277494 |              1.82 |
+| Logistic Regression (Def. 0.50) |    0.5986 |   0.2001 |      0.2033 |   0.3948 |     0.2684 |       0.20193 |         0.5642 |    0.5      |              0.19 |
+| Logistic Regression (Op. 0.68)  |    0.5986 |   0.2001 |      0.2947 |   0.0161 |     0.0305 |       0.20193 |         0.5047 |    0.679589 |              0.19 |
+| XGBoost (Def. 0.50)             |    0.582  |   0.1837 |      0.2028 |   0.134  |     0.1614 |       0.16052 |         0.5216 |    0.5      |              2.05 |
+| XGBoost (Op. 0.68)              |    0.582  |   0.1837 |      0.3019 |   0.0021 |     0.0042 |       0.16052 |         0.5006 |    0.679589 |              2.05 |
+| XGBoost Calibrated (Op. 0.68)   |    0.582  |   0.1837 |      0      |   0      |     0      |       0.12446 |         0.5    |    0.679589 |              2.05 |
 
 ---
 
 ## 2. Dataset Overview & Data Quality Assurance
 The primary dataset utilized is the United States Department of Transportation (US DOT) Airline On-Time Performance dataset (`flights.parquet`), documenting commercial domestic passenger flights across all 365 calendar days of the calendar year.
 
-* **Raw Total Records:** 50,000
-* **Validated Usable Records:** 49,096
-* **Excluded Non-Arrivals (Cancelled & Diverted):** 904
-* **Arrival Delay Prevalence (Positive Class Rate):** 18.58%
-* **Imbalance Ratio:** 4.38:1 (Negative:Positive)
-* **Date Range:** 2015-01-01 to 2015-12-30
+* **Raw Total Records:** 350,000
+* **Validated Usable Records:** 343,885
+* **Excluded Non-Arrivals (Cancelled & Diverted):** 6,115
+* **Arrival Delay Prevalence (Positive Class Rate):** 18.13%
+* **Imbalance Ratio:** 4.52:1 (Negative:Positive)
+* **Date Range:** 2015-01-01 to 2015-12-17
 
 ---
 
@@ -59,9 +58,9 @@ $$\text{Smoothed Rate} = \frac{\sum_{t < D} \text{Delays} + \alpha \cdot \text{G
 
 ## 4. Chronological Splitting Protocol
 Random data splits violate the arrow of time, inducing severe temporal leakage due to seasonal autocorrelation. We enforce strict calendar-date temporal partitioning:
-* **Training Set:** 2015-01-01 to 2015-09-11 (34,520 flights, 254 dates)
-* **Validation Set:** 2015-09-12 to 2015-11-04 (7,249 flights, 54 dates)
-* **Test Set:** 2015-11-05 to 2015-12-30 (7,327 flights, 56 dates)
+* **Training Set:** 2015-01-01 to 2015-09-02 (241,864 flights, 245 dates)
+* **Validation Set:** 2015-09-03 to 2015-10-24 (50,374 flights, 52 dates)
+* **Test Set:** 2015-10-25 to 2015-12-17 (51,647 flights, 54 dates)
 
 ---
 
@@ -79,11 +78,11 @@ Random data splits violate the arrow of time, inducing severe temporal leakage d
 
 ## 6. Probability Calibration & Threshold Optimization
 * **Decision Threshold:** Optimized on validation set for target precision of 70%.
-  * Selected Operating Threshold: **0.2775**
-  * Decision Rule Applied: Target precision 70% unachievable; selected threshold maximizing validation F1
+  * Selected Operating Threshold: **0.6796**
+  * Decision Rule Applied: Target precision of >= 70% met on validation set
 * **Probability Calibration:** Platt (sigmoid) scaling fitted exclusively on validation set probabilities.
-  * Expected Calibration Error (ECE): Raw = 0.1791, Calibrated = 0.0486
-  * Brier Score: Raw = 0.19164, Calibrated = 0.15006
+  * Expected Calibration Error (ECE): Raw = 0.1632, Calibrated = 0.0202
+  * Brier Score: Raw = 0.16052, Calibrated = 0.12446
 
 ---
 
@@ -105,3 +104,16 @@ A comprehensive test suite executed with `pytest` verifies structural integrity,
 * Integration of learned airport and carrier dense embeddings.
 * Temporal sequence modeling (LSTM / Transformer architectures) tracking aircraft tail turnaround trajectories.
 * Ingestion of public NOAA METAR aviation weather features.
+
+---
+
+## 9. Team Roles & Contributions
+
+| Member | Assigned Area | Key Responsibilities |
+| :--- | :--- | :--- |
+| **Vaibhav** | **Exploratory Data Analysis (EDA)** | Exploratory analysis, missingness audits, delay prevalence distributions across airlines, airports, and departure hours. |
+| **Parv** | **Presentation & Report** | Technical research reporting, documentation, presentation slide deck, and performance summary. |
+| **Ayush** | **Feature Engineering** | Zero-leakage pre-departure feature engineering ($T-60$ min cutoff), cyclic time features, and expanding Empirical Bayes delay priors. |
+| **Ritik** | **Model Training & Benchmarking** | Model training (Logistic Regression baseline, histogram XGBoost), class imbalance weighting, probability calibration, and threshold tuning. |
+| **Mohit** | **Pipeline Integration & Operations** | End-to-end pipeline integration, automated data leakage checks, test suite validation, and reproducibility tooling. |
+

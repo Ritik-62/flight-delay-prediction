@@ -1,0 +1,188 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{array}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\begin{document}
+
+\title{Flight Delay Prediction via Gradient Boosting and Temporal Deep Learning:\\
+Pre-Departure Risk Modeling and Tactical Rescheduling\\
+{\footnotesize \textsuperscript{*}Phase 2 Technical Report --- Applied Machine Learning Project}
+}
+
+\author{\IEEEauthorblockN{Vaibhav, Parv, Ayush, Ritik, Mohit}
+\IEEEauthorblockA{Applied Machine Learning Project Team\\
+Course Project Deliverable}
+}
+
+\maketitle
+
+\begin{abstract}
+Predicting commercial flight arrival delays prior to gate departure poses formidable statistical challenges: models must strictly avoid post-departure target leakage while capturing complex interdependencies among airport congestion, scheduled block buffers, carrier network dynamics, and propagated inbound aircraft turnaround delays. We establish an end-to-end machine learning framework comparing tabular gradient boosting classifiers (XGBoost, LightGBM), linear baselines, and deep neural architectures (Tabular Entity-Embedding MLP and Recurrent Temporal Networks) evaluated on US domestic flights from the Bureau of Transportation Statistics (BTS 2015 dataset, 147,389 flights across 358 calendar dates). Operating strictly at decision epoch $T - 60$ minutes prior to scheduled departure, our feature engineering encapsulates expanding empirical Bayes smoothed historical priors, hourly departure/arrival density, and leakage-safe inbound turnaround slack. Empirical evaluation under calendar-date chronological partitioning confirms that the Deep Tabular MLP achieves the highest discriminative performance (ROC-AUC \mbox{0.6196}, PR-AUC \mbox{0.2319}), outperforming gradient boosted ensembles (XGBoost ROC-AUC \mbox{0.5982}, PR-AUC \mbox{0.2141}; LightGBM \mbox{0.5582}/\mbox{0.1875}) and linear baselines (\mbox{0.6159}/\mbox{0.2284}). Post-hoc Platt sigmoid calibration compresses the Brier score from \mbox{0.18734} to \mbox{0.13271} and reduces the Expected Calibration Error (ECE) from \mbox{0.2255} to \mbox{0.0389}. At threshold $\tau = 0.3637$, the calibrated MLP achieves \mbox{71.43\%} precision and \mbox{0.29\%} recall; we clarify this is a threshold-specific trade-off, not overall superiority. An offline rescheduling simulation on 21,866 test flights at $\tau = 0.171$ intervenes on \mbox{2,905} flights (\mbox{13.29\%}), capturing \mbox{759} delays (\mbox{21.69\%} coverage) with \mbox{2,146} false alarms. Under simulation assumptions: \mbox{303} estimated averted delays, \mbox{9,176.7} gross delay minutes saved. After schedule friction (\mbox{7.5} penalty min/intervention, \mbox{21,787.5} total), net benefit is \textcolor{red}{\mbox{$-$12,610.8} minutes}---negative across all eight thresholds.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Flight delay prediction, gradient boosting, temporal deep learning, entity embeddings, probability calibration, data leakage, airline rescheduling.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Commercial aviation networks operate as tightly coupled, high-utilization queueing systems. A minor disturbance at a hub airport frequently cascades across the national airspace system, generating severe downstream delay propagation. In response, airline dispatchers and air traffic control command centers require predictive decision support capable of forecasting arrival delays of 15 minutes or greater (\texttt{ARR\_DEL15}) well before departure.
+However, standard machine learning pipelines frequently suffer from severe data leakage by conditioning on actual departure delays, ground taxi-out times, or post-departure telemetry. In this work, we enforce a strict operational boundary: \textbf{all features must be definitively known 60 minutes prior to scheduled departure ($T - 60$ min)}. We benchmark linear baselines, gradient boosted decision trees (GBDTs), tabular neural networks with learned entity embeddings, and temporal sequential models, followed by an offline tactical rescheduling simulation.
+
+\section{Data Leakage Prevention \& Chronological Partitioning}
+\label{sec:data}
+Operational fidelity demands a mathematically rigorous audit preventing target or post-decision contamination.
+\subsection{The Denylist Protocol}
+We enforce an automated audit denying any column reflecting events occurring after $T - 60$ minutes. Excluded variables include \texttt{DEP\_DELAY}, \texttt{DEPARTURE\_TIME}, \texttt{TAXI\_OUT}, \texttt{WHEELS\_OFF}, \texttt{AIR\_TIME}, and causal delay attributes (e.g., \texttt{WEATHER\_DELAY}, \texttt{LATE\_AIRCRAFT\_DELAY}).
+\subsection{Chronological Date Partitioning}
+Random $K$-fold cross-validation inflates benchmark performance due to high autocorrelation across consecutive calendar days. To ensure unbiased generalization, we enforce calendar-date chronological splitting across the 358 operational dates of 2015:
+\begin{itemize}
+    \item \textbf{Training Set (70.39\%):} 2015-01-01 to 2015-09-07 (250 dates, 103,747 flights).
+    \item \textbf{Validation Set (14.77\%):} 2015-09-08 to 2015-10-30 (53 dates, 21,776 flights).
+    \item \textbf{Held-out Test Set (14.84\%):} 2015-10-31 to 2015-12-24 (55 dates, 21,866 flights).
+\end{itemize}
+
+\subsection{Dataset Provenance \& Cross-Phase Comparability}
+Both Phase 1 and Phase 2 derive from the official 2015 U.S.\ DOT BTS Airline On-Time Performance dataset (\texttt{flights.parquet}, 5,819,079 domestic records). Phase 1 sampled 350,000 records (343,885 valid flights; test: 51,647 flights, Oct 25--Dec 17). To support deep sequence models and Optuna hyperparameter sweeps within memory constraints, Phase 2 employed a uniform step-subsample of 150,000 records (147,389 valid flights; test: 21,866 flights, Oct 31--Dec 24). Because sample sizes, date counts, and test periods differ, \textbf{Phase 1 and Phase 2 metrics are not directly comparable across different test populations}. To guarantee strict internal validity, all baselines (Logistic Regression, XGBoost) were retrained and evaluated on the exact same Phase 2 held-out test partition alongside the deep neural models.
+
+\section{Feature Engineering: Congestion \& Turnaround Slack}
+Phase 2 extends tabular predictors by modeling operational bottlenecks:
+\subsection{Expanding Empirical Bayes Historical Priors}
+To prevent target leakage across training dates, daily cumulative delay statistics are computed strictly on past dates ($t < D$). For entity $e$ (airline, origin, destination, route), the smoothed delay rate is:
+\begin{equation}
+\hat{p}_{e, D} = \frac{\sum_{t < D} \text{Delays}_{e, t} + \alpha \cdot \bar{p}_{\text{global}}}{\sum_{t < D} \text{Flights}_{e, t} + \alpha}
+\end{equation}
+where $\alpha = 15.0$ acts as a pseudo-count shrinkage parameter.
+\subsection{Airport Rolling Congestion}
+We quantify terminal traffic density using published flight schedules: $\text{ORIGIN\_CONGESTION\_1H}$ computes scheduled departures within a $\pm 60$-minute departure window; $\text{DEST\_CONGESTION\_1H}$ measures scheduled arrivals in the destination bank.
+\subsection{Aircraft Turnaround Delay Propagation}
+For each aircraft tail number (\texttt{TAIL\_NUMBER}), we track the inbound flight leg. At decision epoch $T - 60$ min:
+\begin{itemize}
+    \item If the inbound flight landed prior to $T - 60$, its true delay is observed (\texttt{INBOUND\_DELAY\_KNOWN}).
+    \item If the inbound flight has not landed, \texttt{INBOUND\_UNARRIVED\_AT\_T60} is set to 1.
+    \item The scheduled turnaround buffer is $\Delta T_{\text{buffer}} = T_{\text{sched\_dep}} - T_{\text{prev\_sched\_arr}}$.
+\end{itemize}
+
+\section{Model Architectures \& Deep Learning}
+\subsection{Gradient Boosted Ensembles}
+We implement XGBoost (histogram tree method) and LightGBM with tree depth regularization and positive class weighting to mitigate class imbalance.
+\subsection{Deep Tabular MLP with Entity Embeddings}
+High-cardinality categorical variables are mapped into low-dimensional dense embedding vectors:
+\begin{equation}
+\mathbf{e}_{\text{air}} \in \mathbb{R}^{16}, \quad \mathbf{e}_{\text{orig}} \in \mathbb{R}^{32}, \quad \mathbf{e}_{\text{dest}} \in \mathbb{R}^{32}
+\end{equation}
+Dense representations are concatenated with standardized continuous variables and passed through a three-layer MLP with Batch Normalization, Mish activations, and Dropout (0.2).
+\subsection{Temporal Sequence Recurrent Model}
+A 2-layer Gated Recurrent Unit (GRU) models sequential turnaround states across aircraft itinerary legs, capturing temporal delay accumulation.
+
+\section{Probability Calibration}
+Modern deep networks and boosted trees often output miscalibrated posterior probabilities. We apply Platt (sigmoid) calibration fitted strictly on validation logits:
+\begin{equation}
+\hat{P}(Y=1 \mid z) = \sigma(A z + B)
+\end{equation}
+Calibration performance is evaluated using the Brier score and Expected Calibration Error (ECE) across $M=10$ uniform bins:
+\begin{equation}
+\text{ECE} = \sum_{m=1}^M \frac{|B_m|}{N} \left| \text{acc}(B_m) - \text{conf}(B_m) \right|
+\end{equation}
+Empirically, Platt calibration on the held-out test set reduced the Brier score from \mbox{0.18734} (raw MLP) to \mbox{0.13271} and compressed the ECE from \mbox{0.2255} to \mbox{0.0389}, producing dependable probability estimates for downstream tactical dispatch.
+
+\section{Experimental Results \& Benchmark Comparison}
+Table~\ref{tab:benchmark} presents comprehensive out-of-sample performance on the held-out test partition (21,866 flights, Oct~31--Dec~24, 2015). All baselines were retrained on the identical Phase~2 test partition to ensure strict comparability.
+
+\begin{table*}[!t]
+\renewcommand{\arraystretch}{1.2}
+\caption{Model Benchmark Comparison on Held-Out Test Partition ($T - 60$~min Pre-Departure, 21,866 Flights).
+  ``Cal.'' = Platt-calibrated MLP at high-precision threshold $\tau = 0.3637$; LightGBM Prec/Rec/F1 $= 0$ at default $\tau=0.5$ due to class imbalance---use PR-AUC for ranking.}
+\label{tab:benchmark}
+\centering
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{@{}l r r r r r r r@{}}
+\toprule
+\textbf{Model} &
+  \textbf{ROC-AUC} &
+  \textbf{PR-AUC} &
+  \textbf{Precision} &
+  \textbf{Recall} &
+  \textbf{F1} &
+  \textbf{Brier\,$\downarrow$} &
+  \textbf{Lat.\,(ms/1k)} \\
+\midrule
+DL Tabular MLP & \mbox{0.6196} & \mbox{0.2319} & \mbox{0.2472} & \mbox{0.3132} & \mbox{0.2763} & \mbox{0.18734} & \mbox{8.09} \\
+DL Tabular MLP Calibrated & \mbox{0.6196} & \mbox{0.2319} & \mbox{0.7143} & \mbox{0.0029} & \mbox{0.0057} & \mbox{0.13271} & \mbox{8.09} \\
+Logistic Regression & \mbox{0.6159} & \mbox{0.2284} & \mbox{0.2318} & \mbox{0.3692} & \mbox{0.2848} & \mbox{0.19611} & \mbox{0.06} \\
+Temporal Recurrent Net & \mbox{0.6132} & \mbox{0.2283} & \mbox{0.2496} & \mbox{0.1798} & \mbox{0.2090} & \mbox{0.17404} & \mbox{4.07} \\
+XGBoost & \mbox{0.5982} & \mbox{0.2141} & \mbox{0.2374} & \mbox{0.2335} & \mbox{0.2354} & \mbox{0.17557} & \mbox{1.81} \\
+LightGBM & \mbox{0.5582} & \mbox{0.1875} & \mbox{0.0000} & \mbox{0.0000} & \mbox{0.0000} & \mbox{0.13659} & \mbox{0.31} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The Deep Tabular MLP with entity embeddings achieved the highest discriminative performance (ROC-AUC \mbox{0.6196}, PR-AUC \mbox{0.2319}), demonstrating that learned categorical representations capture complex non-linear hub and route interactions more effectively than gradient boosted trees (XGBoost ROC-AUC \mbox{0.5982}, PR-AUC \mbox{0.2141}; LightGBM ROC-AUC \mbox{0.5582}, PR-AUC \mbox{0.1875}) and linear baselines (ROC-AUC \mbox{0.6159}, PR-AUC \mbox{0.2284}).
+
+\subsection{Operational Precision and Threshold-Specific Behavior}
+When tuned to meet the operational precision constraint ($\ge 70\%$) on the validation partition, the calibrated Tabular MLP identified an operating threshold of $\tau = 0.3637$. On the held-out test set, this yields a precision of \mbox{0.7143} (\mbox{71.43\%}) and a recall of \mbox{0.0029} (\mbox{0.29\%}). We stress that this high precision is an operating-point artifact resulting from an intentionally conservative threshold that triggers on only \mbox{0.3\%} of delayed flights. It must not be conflated with overall discriminative superiority, which is properly characterized by PR-AUC (\mbox{0.2319}) and ROC-AUC (\mbox{0.6196}).
+
+\section{Offline Tactical Rescheduling Analysis}
+\subsection{Operational Policy Formulation}
+When the calibrated delay risk exceeds policy threshold $\tau$, an offline recommendation is triggered:
+\begin{itemize}
+    \item \textbf{Tail Swap:} If the aircraft has a compromised turnaround buffer at a major carrier hub (share $\ge 25\%$), swap with an available on-time aircraft.
+    \item \textbf{Slot Shift (+30 min):} For non-hub or congestion-driven risk, insert a 30-minute ground delay buffer to absorb downstream queueing.
+\end{itemize}
+
+\subsection{Policy Sweep \& Intervention Friction Analysis}
+Table~\ref{tab:resched} summarizes the counterfactual simulation across eight risk thresholds on 21,866 test flights. \textbf{Net benefit (column 6) is negative at every threshold}, shown in \textcolor{red}{red}, reflecting that schedule friction exceeds gross delay savings under this linear penalty model.
+
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.1}
+\caption{Rescheduling Policy Sweep (21,866 Test Flights). Net\,Min = Gross Delay Minutes $-$ Friction Penalty (7.5\,min $\times$ interventions). \textcolor{red}{All net values are negative} under this linear cost model.}
+\label{tab:resched}
+\centering
+\setlength{\tabcolsep}{3.5pt}
+\small
+\begin{tabular}{@{}r r r r r r@{}}
+\toprule
+$\boldsymbol{\tau}$ &
+  \textbf{Interv.\,\%} &
+  \textbf{Cov.\,\%} &
+  \textbf{Averted} &
+  \textbf{Gross\,Min} &
+  \textbf{Net\,Min} \\
+\midrule
+\mbox{0.107} & \mbox{60.0}\% & \mbox{73.3}\% & \mbox{1,025} & \mbox{31,260.7} & \textcolor{red}{\mbox{-67,139.3}} \\
+\mbox{0.123} & \mbox{47.0}\% & \mbox{61.1}\% & \mbox{855} & \mbox{26,103.5} & \textcolor{red}{\mbox{-50,974.0}} \\
+\mbox{0.139} & \mbox{34.5}\% & \mbox{48.4}\% & \mbox{676} & \mbox{20,442.5} & \textcolor{red}{\mbox{-36,062.5}} \\
+\mbox{0.155} & \mbox{22.6}\% & \mbox{34.2}\% & \mbox{479} & \mbox{14,398.5} & \textcolor{red}{\mbox{-22,606.5}} \\
+\mbox{0.171} & \mbox{13.3}\% & \mbox{21.7}\% & \mbox{303} & \mbox{9,176.7} & \textcolor{red}{\mbox{-12,610.8}} \\
+\mbox{0.188} & \mbox{7.2}\% & \mbox{12.8}\% & \mbox{178} & \mbox{5,387.1} & \textcolor{red}{\mbox{-6,350.4}} \\
+\mbox{0.204} & \mbox{3.8}\% & \mbox{7.1}\% & \mbox{99} & \mbox{3,140.3} & \textcolor{red}{\mbox{-3,144.7}} \\
+\mbox{0.220} & \mbox{2.0}\% & \mbox{4.2}\% & \mbox{58} & \mbox{1,798.3} & \textcolor{red}{\mbox{-1,486.7}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At operational threshold $\tau = 0.171$, the policy intervenes on \mbox{2,905} flights (\mbox{13.29\%}), capturing \mbox{759} actual delays (\mbox{21.69\%} delay coverage) while generating \mbox{2,146} false alarm interventions. Under the simulation model assumptions, this yields an estimated \mbox{303} averted delays and \mbox{9,176.7} gross delay minutes saved (simulation metric based on 45\,min average delay duration; not passenger-level delay minutes).
+
+Crucially, the net benefit is \textcolor{red}{negative (\mbox{$-$12,610.8} minutes)}. Under the simulation friction model, each intervention incurs a schedule buffer penalty of $30\,\text{min} \times 0.25 = 7.5\,\text{penalty minutes}$, totaling \mbox{21,787.5} penalty minutes. Because false alarm interventions (\mbox{2,146} flights, \mbox{73.87\%} of interventions) bear this penalty without averting an actual delay, the friction cost exceeds gross savings. Net benefit remains negative across all eight evaluated thresholds under this linear cost formulation.
+
+\section{Conclusion}
+Phase~2 successfully unified leakage-safe operational feature engineering with gradient boosting, tabular neural embeddings, and temporal deep learning. The Deep Tabular MLP with entity embeddings attained the highest discriminative performance (ROC-AUC \mbox{0.6196}, PR-AUC \mbox{0.2319}), while Platt calibration reduced ECE from \mbox{0.2255} to \mbox{0.0389}. Tactical rescheduling counterfactuals demonstrate that proactive interventions impose substantial schedule friction, resulting in negative net benefit under linear penalty models---underscoring the need for accurate delay probability estimation before operational deployment.
+
+\begin{thebibliography}{00}
+\bibitem{bts} U.S. Bureau of Transportation Statistics, ``Airline On-Time Performance Data (2015),'' Bureau of Transportation Statistics, U.S. Department of Transportation, 2015. [Online]. Available: https://www.bts.gov/
+\bibitem{guo2017} C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, ``On Calibration of Modern Neural Networks,'' in \textit{Proc. 34th Int. Conf. Machine Learning (ICML)}, 2017, pp. 1321--1330.
+\bibitem{chen2016} T. Chen and C. Guestrin, ``XGBoost: A Scalable Tree Boosting System,'' in \textit{Proc. 22nd ACM SIGKDD Int. Conf. Knowledge Discovery and Data Mining}, 2016, pp. 785--794.
+\bibitem{ke2017} G. Ke et al., ``LightGBM: A Highly Efficient Gradient Boosting Decision Tree,'' in \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 2017, pp. 3146--3154.
+\bibitem{guo2016} C. Guo and F. Berkhahn, ``Entity Embeddings of Categorical Variables,'' \textit{arXiv:1604.06737}, 2016.
+\end{thebibliography}
+
+\end{document}
