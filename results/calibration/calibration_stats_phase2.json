@@ -1,0 +1,6 @@
+{
+  "raw_brier": 0.18734,
+  "raw_ece": 0.2255,
+  "calibrated_brier": 0.13271,
+  "calibrated_ece": 0.0389
+}

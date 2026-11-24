@@ -7,15 +7,16 @@
     "subsample": 0.8,
     "colsample_bytree": 0.8,
     "min_child_weight": 3,
-    "scale_pos_weight": 4.018,
+    "scale_pos_weight": 3.97,
     "eval_metric": "logloss",
     "random_state": 42,
-    "n_jobs": -1,
+    "n_jobs": 1,
+    "tree_method": "hist",
     "early_stopping_rounds": 25
   },
-  "training_duration_seconds": 10.365,
-  "n_samples": 34520,
-  "n_features": 136,
-  "best_iteration": 299,
-  "best_score": 0.48128136362613755
+  "training_duration_seconds": 5.045,
+  "n_samples": 103747,
+  "n_features": 142,
+  "best_iteration": 268,
+  "best_score": 0.4752094446174892
 }

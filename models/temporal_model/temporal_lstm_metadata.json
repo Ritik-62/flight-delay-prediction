@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "model_type": "temporal_lstm",
+    "best_val_pr_auc": 0.1861,
+    "training_duration_seconds": 6.19,
+    "epochs_trained": 6,
+    "batch_size": 512,
+    "device": "cpu"
+  },
+  "airline_vocab_size": 14,
+  "origin_vocab_size": 321,
+  "dest_vocab_size": 321
+}

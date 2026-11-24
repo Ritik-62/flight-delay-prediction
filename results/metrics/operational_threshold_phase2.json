@@ -1,0 +1,9 @@
+{
+  "selected_threshold": 0.3637,
+  "rule_applied": "Target precision of >= 70% met on validation set",
+  "target_precision_requested": 0.7,
+  "achieved_target_on_validation": true,
+  "validation_precision_at_threshold": 0.7,
+  "validation_recall_at_threshold": 0.0025,
+  "validation_f1_at_threshold": 0.005
+}

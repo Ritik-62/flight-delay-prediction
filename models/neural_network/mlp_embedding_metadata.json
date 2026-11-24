@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "model_type": "mlp_embedding",
+    "best_val_pr_auc": 0.1925,
+    "training_duration_seconds": 13.55,
+    "epochs_trained": 7,
+    "batch_size": 512,
+    "device": "cpu"
+  },
+  "airline_vocab_size": 14,
+  "origin_vocab_size": 321,
+  "dest_vocab_size": 321
+}
