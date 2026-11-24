@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 try:
     import xgboost as xgb
     XGBOOST_AVAILABLE = True
-except ImportError:
+except Exception as e:
+    # Any failure (ImportError, missing libomp, etc.) disables XGBoost
+    print(f"XGBoost import failed: {e}")
     xgb = None
     XGBOOST_AVAILABLE = False
 
@@ -33,7 +35,8 @@ class XGBoostTrainer:
         eval_metric: str = "logloss",
         early_stopping_rounds: int = 25,
         random_state: int = 42,
-        n_jobs: int = -1,
+        n_jobs: int = 1,
+        tree_method: str = "hist",
     ):
         self.params = {
             "n_estimators": n_estimators,
@@ -47,6 +50,7 @@ class XGBoostTrainer:
             "early_stopping_rounds": early_stopping_rounds,
             "random_state": random_state,
             "n_jobs": n_jobs,
+            "tree_method": tree_method,
         }
         self.model: Optional[Any] = None
         self.training_metadata: Dict[str, Any] = {}
